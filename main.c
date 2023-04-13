@@ -1,4 +1,4 @@
-// prive includes //
+// prive includes // mashu mashu
 
 #include <stdio.h>
 #include <stdlib.h>
