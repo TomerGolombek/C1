@@ -21,9 +21,8 @@
 
 // functions declarations //
 
-void place_pawns(char [][BOARD_SIZE]);
 void print_board(char [][BOARD_SIZE]);
-void reset_board(char [][BOARD_SIZE],char [][BOARD_SIZE],int*);
+void place_pawns(char [][BOARD_SIZE]);
 void print_play_number(int);
 void check_if_answer_is_good(char*);
 void assure_that_chosen_coord_are_ok(int*, int*, char, char [][BOARD_SIZE]);
@@ -52,7 +51,6 @@ int reset_flag = 0;
 int y_target = 0;
 int x_target = 0;
 char pawn_flag = 'X';
-char starting_array[BOARD_SIZE_HEIGHT][BOARD_SIZE]={" |0 1 2 3 4 5 6 7"," *_______________","0|  X   X   X   X","1|X   X   X   X  ","2|  X   X   X   X","3|.   .   .   .   ","4|  .   .   .   .","5|O   O   O   O  ","6|  O   O   O   O","7|O   O   O   O  "};
 char board_array[BOARD_SIZE_HEIGHT][BOARD_SIZE]={" |0 1 2 3 4 5 6 7"," *_______________","0|  X   X   X   X","1|X   X   X   X  ","2|  X   X   X   X","3|.   .   .   .   ","4|  .   .   .   .","5|O   O   O   O  ","6|  O   O   O   O","7|O   O   O   O  "};
 
 // main function //
@@ -69,12 +67,20 @@ int main() {
             while(!pawn_moveable) {
                 scanf("%d %d%*c", &x_coordinates, &y_coordinates);
                 reset_flag = check_if_player_want_to_continue(x_coordinates, y_coordinates);
-                if (reset_flag)
-                    reset_board(board_array, starting_array, &reset_flag);
+                if (reset_flag) {
+                    place_pawns(board_array);
+                    play_number_index = 1;
+                    break;
+
+                }
                 else {
                     assure_that_chosen_coord_are_ok(&x_coordinates, &y_coordinates, pawn_flag, board_array);
                     pawn_moveable = is_pawn_moveable(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2);
                 }
+            }
+            if(reset_flag){
+                reset_flag = 0;
+                continue;
             }
             printf("Player X - Please enter pawn's destination (row number followed by column number):\n");
             while (!move_pawn_is_fine) {
@@ -90,18 +96,26 @@ int main() {
             while(!pawn_moveable) {
                 scanf("%d %d%*c", &x_coordinates, &y_coordinates);
                 reset_flag = check_if_player_want_to_continue(x_coordinates, y_coordinates);
-                if (reset_flag)
-                    reset_board(board_array, starting_array, &reset_flag);
+                if (reset_flag) {
+                    place_pawns(board_array);
+                    reset_flag = 0;
+                    break;
+                }
                 else {
                     assure_that_chosen_coord_are_ok(&x_coordinates, &y_coordinates, pawn_flag, board_array);
                     pawn_moveable = is_pawn_moveable(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2);
                 }
+            }
+            if(reset_flag){
+                reset_flag = 0;
+                continue;
             }
             printf("Player O - Please enter pawn's destination (row number followed by column number):\n");
             while (!move_pawn_is_fine) {
                 scanf("%d %d%*c",&x_target,&y_target);
                 move_pawn_is_fine = is_move_legal(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2,x_target + 2,2 * y_target + 2);
             }
+
             pawn_flag = 'X';
             pawn_moveable = 0;
             move_pawn_is_fine = 0;
@@ -180,8 +194,7 @@ int play_single_turn(char board[][BOARD_SIZE], char pawn){
 int play(char board[][BOARD_SIZE]){
     return 0;
 }
-void place_pawns(char board[][BOARD_SIZE]){
-}
+
 void print_board(char board[][BOARD_SIZE]){
     int i, j;
     for (i = 0; i < BOARD_SIZE_HEIGHT; i++) {
@@ -230,14 +243,14 @@ int check_if_player_want_to_continue(int x,int y){
     return 0;
 }
 
-void reset_board(char board1[][BOARD_SIZE],char board2[][BOARD_SIZE],int* reset){
+void place_pawns(char board[][BOARD_SIZE]){
     int i, j;
+    char temp[BOARD_SIZE_HEIGHT][BOARD_SIZE]={" |0 1 2 3 4 5 6 7"," *_______________","0|  X   X   X   X","1|X   X   X   X  ","2|  X   X   X   X","3|.   .   .   .   ","4|  .   .   .   .","5|O   O   O   O  ","6|  O   O   O   O","7|O   O   O   O  "};
     for (i = 0; i < BOARD_SIZE - 8; i++) {
         for (j = 0; j < BOARD_SIZE; j++) {
-            board1[i][j] = board2[i][j];
+            board[i][j] = temp[i][j];
         }
     }
-    *reset = 0;
 
 }
 int is_move_edible(char board[][BOARD_SIZE], char pawn, int row, int col){
