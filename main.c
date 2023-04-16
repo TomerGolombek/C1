@@ -57,7 +57,9 @@ int main() {
         if(end_game=='y'||end_game=='Y')
             place_pawns(boards_array);
         else{
+            place_pawns(boards_array);
             break;
+
         }
     }
     return 0;
