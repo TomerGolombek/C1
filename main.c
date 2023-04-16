@@ -25,7 +25,7 @@ void place_pawns(char [][BOARD_SIZE]);
 void print_play_number(int);
 void check_if_answer_is_good(char*);
 void assure_that_chosen_coord_are_ok(int*, int*, char, char [][BOARD_SIZE]);
-void change_place(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarget, int ytarget,int y_target,int x_target,int y_coord,int x_coord);
+void change_place(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarget, int ytarget,int y_target,int y_coord);
 void print_score(char [][BOARD_SIZE]);
 int check_if_player_want_to_continue(int,int);
 int is_move_legal(char [][BOARD_SIZE], char pawn, int row,int col, int xtarget,int ytarget);
@@ -35,19 +35,14 @@ int is_pawn_moveable(char [][BOARD_SIZE], char pawn, int row, int col);
 int check_winner(char [][BOARD_SIZE]);
 int play(char [][BOARD_SIZE]);
 int play_single_turn(char [][BOARD_SIZE],char pawn);
+int check_reset(char [][BOARD_SIZE]);
+int pawns_amount(char [][BOARD_SIZE], char pawn);
 
 
 // variables declarations //
 
-int pawn_moveable = 0;
-int play_number_index = 1;
-int x_coordinates , y_coordinates;
-int move_pawn_is_fine;
-int reset_flag = 0;
-int y_target = 0;
-int x_target = 0;
-char pawn_flag = 'X';
-char board_array[BOARD_SIZE_HEIGHT][BOARD_SIZE]={" |0 1 2 3 4 5 6 7"," *_______________","0|  X   X   X   X","1|X   X   X   X  ","2|  X   X   X   X","3|.   .   .   .   ","4|  .   .   .   .","5|O   O   O   O  ","6|  O   O   O   O","7|O   O   O   O  "};
+
+char boards_array[BOARD_SIZE_HEIGHT][BOARD_SIZE]={" |0 1 2 3 4 5 6 7"," *_______________","0|  X   X   X   X","1|X   X   X   X  ","2|  X   X   X   X","3|.   .   .   .   ","4|  .   .   .   .","5|O   O   O   O  ","6|  O   O   O   O","7|O   O   O   O  "};
 char end_game;
 
 // main function //
@@ -55,95 +50,14 @@ char end_game;
 int main() {
     printf("Lets play Draughts!\n");
     while(TRUE){
-        print_board(board_array);
-        print_play_number(play_number_index);
-        pawn_moveable = 0;
-        if(pawn_flag=='X') {
-
-            printf("Player X - Please enter pawn's location (row number followed by column number):\n");
-            while(!pawn_moveable) {
-                scanf("%d %d%*c", &x_coordinates, &y_coordinates);
-                reset_flag = check_if_player_want_to_continue(x_coordinates, y_coordinates);
-                if (reset_flag) {
-                    place_pawns(board_array);
-                    play_number_index = 1;
-                    break;
-
-                }
-                else {
-                    assure_that_chosen_coord_are_ok(&x_coordinates, &y_coordinates, pawn_flag, board_array);
-                    pawn_moveable = is_pawn_moveable(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2);
-                    if(!pawn_moveable){
-                        printf("This pawn has nowhere to move!\n");
-                        printf("Player %c - Bad pawn's selection please enter pawn's location again:\n",pawn_flag);
-                    }
-                }
-            }
-            if(reset_flag){
-                reset_flag = 0;
-                continue;
-            }
-            printf("Player X - Please enter pawn's destination (row number followed by column number):\n");
-            while (!move_pawn_is_fine) {
-                scanf("%d %d%*c",&x_target,&y_target);
-                move_pawn_is_fine = is_move_legal(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2,x_target + 2,2 * y_target + 2);
-                if(!move_pawn_is_fine){
-                    printf("Player X - Bad pawn's destination please enter pawn's destination again:\n");
-                }
-            }
-            change_place(board_array,pawn_flag,x_coordinates+2,2*y_coordinates+2,x_target+2,2 * y_target + 2,y_target,x_target,y_coordinates,x_coordinates);
-            pawn_flag = 'O';
-            pawn_moveable = 0;
-            move_pawn_is_fine = 0;
-        }
-        else{ // pawn=='O'
-            printf("Player O - Please enter pawn's location (row number followed by column number):\n");
-            while(!pawn_moveable) {
-                scanf("%d %d%*c", &x_coordinates, &y_coordinates);
-                reset_flag = check_if_player_want_to_continue(x_coordinates, y_coordinates);
-                if (reset_flag) {
-                    place_pawns(board_array);
-                    reset_flag = 0;
-                    break;
-                }
-                else {
-                    assure_that_chosen_coord_are_ok(&x_coordinates, &y_coordinates, pawn_flag, board_array);
-                    pawn_moveable = is_pawn_moveable(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2);
-                    if(!pawn_moveable){
-                        printf("This pawn has nowhere to move!\n");
-                        printf("Player %c - Bad pawn's selection please enter pawn's location again:\n",pawn_flag);
-                    }
-                }
-            }
-            if(reset_flag){
-                reset_flag = 0;
-                continue;
-            }
-            printf("Player O - Please enter pawn's destination (row number followed by column number):\n");
-            while (!move_pawn_is_fine) {
-                scanf("%d %d%*c",&x_target,&y_target);
-                move_pawn_is_fine = is_move_legal(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2,x_target + 2,2 * y_target + 2);
-                if(!move_pawn_is_fine){
-                    printf("Player O - Bad pawn's destination please enter pawn's destination again:\n");
-                }
-            }
-            change_place(board_array,pawn_flag,x_coordinates+2,2*y_coordinates+2,x_target+2,2 * y_target + 2,y_target,x_target,y_coordinates,x_coordinates);
-            pawn_flag = 'X';
-            pawn_moveable = 0;
-            move_pawn_is_fine = 0;
-        }
-        play_number_index++;
-        print_score(board_array);
-        if(check_winner(board_array)){
-            play_number_index = 0;
-            printf("Would you like to play another game?(y\\n)\n");
-            scanf("%c%*c", &end_game);
-            check_if_answer_is_good(&end_game);
-            if(end_game=='y'||end_game=='Y')
-                place_pawns(board_array);
-            else{
-                break;
-            }
+        play(boards_array);
+        printf("Would you like to play another game?(y\\n)\n");
+        scanf("%c%*c", &end_game);
+        check_if_answer_is_good(&end_game);
+        if(end_game=='y'||end_game=='Y')
+            place_pawns(boards_array);
+        else{
+            break;
         }
     }
     return 0;
@@ -199,11 +113,17 @@ int is_pawn_moveable(char board[][BOARD_SIZE], char pawn, int row, int col){
     }
     else return is_move_simple(board, pawn, row, col) ? 1 : 0;
 }
-int play_single_turn(char board[][BOARD_SIZE], char pawn){
-    return 0;
-}
-int play(char board[][BOARD_SIZE]){
-    return 0;
+
+int pawns_amount(char board[][BOARD_SIZE], char pawn){
+    int i, j, amount=0;
+    for (i = 0; i < BOARD_SIZE_HEIGHT; i++) {
+        for (j = 0; j < BOARD_SIZE; j++) {
+             if(board[i][j]==pawn){
+                 amount++;
+             }
+        }
+    }
+    return amount;
 }
 
 void print_board(char board[][BOARD_SIZE]){
@@ -267,24 +187,24 @@ int check_winner(char board[][BOARD_SIZE]){
         }
     }
     if(x_score==12){
-        printf("Wooohooo! player X Won!");
-        print_board(board_array);
+        printf("Wooohooo! player X Won!\n");
+        print_board(board);
         return 1;
     }
     if(y_score==12){
-        printf("Wooohooo! player O Won!");
-        print_board(board_array);
+        printf("Wooohooo! player O Won!\n");
+        print_board(board);
         return 1;
     }
     for (j = 0; j < BOARD_SIZE; j++) {
         if (board[2][j]=='O'){
-            printf("Wooohooo! player O Won!");
-            print_board(board_array);
+            printf("Wooohooo! player O Won!\n");
+            print_board(board);
             return 1;
         }
         if (board[9][j]=='X'){
-            printf("Wooohooo! player X Won!");
-            print_board(board_array);
+            printf("Wooohooo! player X Won!\n");
+            print_board(board);
             return 1;
         }
     }
@@ -405,7 +325,7 @@ int is_move_simple(char board[][BOARD_SIZE], char pawn, int row, int col) {
         }
     }
 }
-void change_place(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarget, int ytarget,int y_target_org,int x_target_org,int y_coord,int x_coord){
+void change_place(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarget, int ytarget,int y_target_org,int y_coord){
     if (pawn == 'X'){
         if (y_coord % 2 ==  y_target_org % 2)/*eat mode*/ {
             board[row][col]= '.';
@@ -434,4 +354,74 @@ void change_place(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarg
         }
     }
 }
+int check_reset(char board[][BOARD_SIZE]){
+    char temp[BOARD_SIZE_HEIGHT][BOARD_SIZE]={" |0 1 2 3 4 5 6 7"," *_______________","0|  X   X   X   X","1|X   X   X   X  ","2|  X   X   X   X","3|.   .   .   .   ","4|  .   .   .   .","5|O   O   O   O  ","6|  O   O   O   O","7|O   O   O   O  "};
+    int i,j;
+    for (i = 0; i < BOARD_SIZE - 8; i++) {
+        for (j = 0; j < BOARD_SIZE; j++) {
+            if(board[i][j]!=temp[i][j])
+                return 0;
+        }
+        }
+    return 1;
+
+}
+int play_single_turn(char board_array[][BOARD_SIZE], char pawn_flag){
+    int pawn_moveable = 0 , x_coordinates = 0, y_coordinates = 0 , reset_flag   , move_pawn_is_fine = 0 ,x_target = 0, y_target = 0,pawn_pre , pawn_after;
+    char opposite_pawn = pawn_flag == 'X'? 'O' :'X';
+    printf("Player %c - Please enter pawn's location (row number followed by column number):\n",pawn_flag);
+    while(!pawn_moveable) {
+        scanf("%d %d%*c", &x_coordinates, &y_coordinates);
+        reset_flag = check_if_player_want_to_continue(x_coordinates, y_coordinates);
+        if (reset_flag) {
+            place_pawns(board_array);
+            return 0;
+        }
+        else {
+            assure_that_chosen_coord_are_ok(&x_coordinates, &y_coordinates, pawn_flag, board_array);
+            pawn_moveable = is_pawn_moveable(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2);
+            if(!pawn_moveable){
+                printf("This pawn has nowhere to move!\n");
+                printf("Player %c - Bad pawn's selection please enter pawn's location again:\n",pawn_flag);
+            }
+        }
+    }
+    printf("Player %c - Please enter pawn's destination (row number followed by column number):\n",pawn_flag);
+    while (!move_pawn_is_fine) {
+        scanf("%d %d%*c",&x_target,&y_target);
+        move_pawn_is_fine = is_move_legal(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2,x_target + 2,2 * y_target + 2);
+        if(!move_pawn_is_fine){
+            printf("Player %c - Bad pawn's destination please enter pawn's destination again:\n",pawn_flag);
+        }
+    }
+    pawn_pre = pawns_amount(board_array,opposite_pawn);
+    change_place(board_array,pawn_flag,x_coordinates+2,2*y_coordinates+2,x_target+2,2 * y_target + 2,y_target,y_coordinates);
+    pawn_after = pawns_amount(board_array,opposite_pawn);
+    printf("%d %d\n",pawn_pre,pawn_after);
+    return pawn_pre - pawn_after ;
+}
+
+int play(char board[][BOARD_SIZE]){
+    int is_eaten =0;
+    int play_number_index=1;
+    char pawn_flag = 'X';
+    print_play_number(play_number_index);
+    print_board(board);
+    while(TRUE){
+        is_eaten+=play_single_turn(board,pawn_flag);
+        play_number_index++;
+        check_winner(board);
+        if (check_winner(board)){
+            break;
+        }
+        print_score(board);
+        if(check_reset(board))
+            play_number_index=1;
+        print_play_number(play_number_index);
+        print_board(board);
+        pawn_flag = pawn_flag == 'X' ? 'O' : 'X';
+    }
+    return 0;
+}
+
 
