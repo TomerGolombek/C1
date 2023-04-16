@@ -73,34 +73,18 @@ int is_move_legal(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarg
         return 0;
 
     if (pawn == 'X')
-        if ((eat_move == EAT_BOTH) && (xtarget == row + 2) && ((ytarget) == col + 4) || (ytarget) == col - 4) {
-            return 1;
-        } else if ((eat_move == EAT_LEFT) && (xtarget == row + 2) && ((ytarget) == col - 4)) {
-            return 1;
-        } else if ((eat_move == EAT_RIGHT) && (xtarget == row + 2) && ((ytarget) == col + 4)) {
-            return 1;
-        } else if ((sim_move == MOVE_BOTH) && (xtarget == row + 1) && ((ytarget == col + 2) || (ytarget == col - 2))) {
-            return 1;
-        } else if ((sim_move == MOVE_LEFT) && (xtarget == row + 1) && ((ytarget) == col - 2)) {
-            return 1;
-        } else if ((sim_move == MOVE_RIGHT) && (xtarget == row + 1) && ((ytarget) == col + 2)) {
+        if (((eat_move == EAT_BOTH) && (xtarget == row + 2) && ((ytarget) == col + 4) || (ytarget) == col - 4)||((eat_move == EAT_LEFT) && (xtarget == row + 2) && ((ytarget) == col - 4)
+        )||((eat_move == EAT_RIGHT) && (xtarget == row + 2) && ((ytarget) == col + 4))||((sim_move == MOVE_BOTH) && (xtarget == row + 1) && ((ytarget == col + 2) || (ytarget == col - 2)))
+        ||((sim_move == MOVE_LEFT) && (xtarget == row + 1) && ((ytarget) == col - 2))||((sim_move == MOVE_RIGHT) && (xtarget == row + 1) && ((ytarget) == col + 2))) {
             return 1;
         } else {
             return 0;
         }
 
     else { //pawn=='O'
-        if ((eat_move == EAT_BOTH) && (xtarget == row - 2) && ((ytarget) == col + 4 || (ytarget) == col - 4)) {
-            return 1;
-        } else if ((eat_move == EAT_LEFT) && (xtarget == row - 2) && ((ytarget) == col - 4)) {
-            return 1;
-        } else if ((eat_move == EAT_RIGHT) && (xtarget == row - 2) && ((ytarget) == col + 4)) {
-            return 1;
-        } else if ((sim_move == MOVE_BOTH) && (xtarget == row - 1) && ((ytarget == col + 2) || (ytarget == col - 2))) {
-            return 1;
-        } else if ((sim_move == MOVE_LEFT) && (xtarget == row - 1) && ((ytarget) == col - 2)) {
-            return 1;
-        } else if ((sim_move == MOVE_RIGHT) && (xtarget == row - 1) && ((ytarget) == col + 2)) {
+        if (((eat_move == EAT_BOTH) && (xtarget == row - 2) && ((ytarget) == col + 4 || (ytarget) == col - 4))||((eat_move == EAT_LEFT) && (xtarget == row - 2) && ((ytarget) == col - 4))
+        ||((eat_move == EAT_RIGHT) && (xtarget == row - 2) && ((ytarget) == col + 4))||((sim_move == MOVE_BOTH) && (xtarget == row - 1) && ((ytarget == col + 2) || (ytarget == col - 2)))
+        ||((sim_move == MOVE_LEFT) && (xtarget == row - 1) && ((ytarget) == col - 2))||((sim_move == MOVE_RIGHT) && (xtarget == row - 1) && ((ytarget) == col + 2))) {
             return 1;
         } else {
             return 0;
@@ -397,7 +381,6 @@ int play_single_turn(char board_array[][BOARD_SIZE], char pawn_flag){
     pawn_pre = pawns_amount(board_array,opposite_pawn);
     change_place(board_array,pawn_flag,x_coordinates+2,2*y_coordinates+2,x_target+2,2 * y_target + 2,y_target,y_coordinates);
     pawn_after = pawns_amount(board_array,opposite_pawn);
-    printf("%d %d\n",pawn_pre,pawn_after);
     return pawn_pre - pawn_after ;
 }
 
