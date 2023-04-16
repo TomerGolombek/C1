@@ -133,6 +133,35 @@ int main() {
 
 // functions implements //
 
+int move(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarget, int ytarget,int y_target,int x_target,int y_coordinates,int x_coordinates){
+    if pawn == 'X'{
+        if y_coordinates % 2 ==  y_target % 2 /*eat mode*/ {
+            board_array[row][col]= ' ';
+            board_array[xtarget][ytarget] =  'X';
+            board_array[abs(row-xtarget)][abs(col-ytarget)] = ' ';
+
+        }
+        else /*regular move mod*/{
+            board_array[row][col]= ' ';
+            board_array[xtarget][ytarget] =  'X';
+        }
+    }
+
+    else  /*pawn == 'O'*/ {
+
+        if y_coordinates % 2 ==  y_target % 2 /*eat mode*/ {
+            board_array[row][col]= ' ';
+            board_array[xtarget][ytarget] =  'O';
+            board_array[abs(row-xtarget)][abs(col-ytarget)] = ' ';
+        }
+        else /*regular move mod*/{
+            board_array[row][col]= ' ';
+            board_array[xtarget][ytarget] =  'O';
+        }
+
+    }
+}
+
 int is_move_legal(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarget, int ytarget){
     int sim_move = is_move_simple(board,pawn,row,col);
     int eat_move = is_move_edible(board,pawn,row,col);
