@@ -5,7 +5,6 @@
 
 // private defines //
 
-#define STARTING_BOARD {" |0 1 2 3 4 5 6 7"," *_______________","0|  X   X   X   X","1|X   X   X   X  ","2|  X   X   X   X","3|.   .   .   .   ","4|  .   .   .   .","5|O   O   O   O  ","6|  O   O   O   O","7|O   O   O   O  "};
 #define BOARD_SIZE        18
 #define BOARD_SIZE_HEIGHT 10
 #define QUIT              999
@@ -18,8 +17,6 @@
 #define HUNGRY             0
 #define FALSE              0
 #define TRUE               1
-#define X_WINNER           1
-#define Y_WINNER           2
 
 // functions declarations //
 
@@ -28,27 +25,22 @@ void place_pawns(char [][BOARD_SIZE]);
 void print_play_number(int);
 void check_if_answer_is_good(char*);
 void assure_that_chosen_coord_are_ok(int*, int*, char, char [][BOARD_SIZE]);
-int check_if_player_want_to_continue(int,int);
+void change_place(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarget, int ytarget,int y_target,int x_target,int y_coord,int x_coord);
 void print_score(char [][BOARD_SIZE]);
+int check_if_player_want_to_continue(int,int);
 int is_move_legal(char [][BOARD_SIZE], char pawn, int row,int col, int xtarget,int ytarget);
 int is_move_edible(char [][BOARD_SIZE], char pawn, int row, int col);
 int is_move_simple(char [][BOARD_SIZE], char pawn, int row, int col);
 int is_pawn_moveable(char [][BOARD_SIZE], char pawn, int row, int col);
 int check_winner(char [][BOARD_SIZE]);
-//int is_pawn_blocked(char [][BOARD_SIZE], char pawn, int row, int col);
-//int is_pawn_on_edge(char [][BOARD_SIZE], char pawn, int row, int col);
-//int is_enemy_near(char [][BOARD_SIZE], char pawn, int row, int col));
-//int is_friend_near(char [][BOARD_SIZE], char pawn, int row, int col));
 int play(char [][BOARD_SIZE]);
+int play_single_turn(char [][BOARD_SIZE],char pawn);
 
 
 // variables declarations //
 
 int pawn_moveable = 0;
-int pawn_edible = 0;
-int move_legal = 0;
 int play_number_index = 1;
-int keep_playing = 1;
 int x_coordinates , y_coordinates;
 int move_pawn_is_fine;
 int reset_flag = 0;
@@ -56,6 +48,7 @@ int y_target = 0;
 int x_target = 0;
 char pawn_flag = 'X';
 char board_array[BOARD_SIZE_HEIGHT][BOARD_SIZE]={" |0 1 2 3 4 5 6 7"," *_______________","0|  X   X   X   X","1|X   X   X   X  ","2|  X   X   X   X","3|.   .   .   .   ","4|  .   .   .   .","5|O   O   O   O  ","6|  O   O   O   O","7|O   O   O   O  "};
+char end_game;
 
 // main function //
 
@@ -80,6 +73,10 @@ int main() {
                 else {
                     assure_that_chosen_coord_are_ok(&x_coordinates, &y_coordinates, pawn_flag, board_array);
                     pawn_moveable = is_pawn_moveable(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2);
+                    if(!pawn_moveable){
+                        printf("This pawn has nowhere to move!\n");
+                        printf("Player %c - Bad pawn's selection please enter pawn's location again:\n",pawn_flag);
+                    }
                 }
             }
             if(reset_flag){
@@ -90,7 +87,11 @@ int main() {
             while (!move_pawn_is_fine) {
                 scanf("%d %d%*c",&x_target,&y_target);
                 move_pawn_is_fine = is_move_legal(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2,x_target + 2,2 * y_target + 2);
+                if(!move_pawn_is_fine){
+                    printf("Player X - Bad pawn's destination please enter pawn's destination again:\n");
+                }
             }
+            change_place(board_array,pawn_flag,x_coordinates+2,2*y_coordinates+2,x_target+2,2 * y_target + 2,y_target,x_target,y_coordinates,x_coordinates);
             pawn_flag = 'O';
             pawn_moveable = 0;
             move_pawn_is_fine = 0;
@@ -108,6 +109,10 @@ int main() {
                 else {
                     assure_that_chosen_coord_are_ok(&x_coordinates, &y_coordinates, pawn_flag, board_array);
                     pawn_moveable = is_pawn_moveable(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2);
+                    if(!pawn_moveable){
+                        printf("This pawn has nowhere to move!\n");
+                        printf("Player %c - Bad pawn's selection please enter pawn's location again:\n",pawn_flag);
+                    }
                 }
             }
             if(reset_flag){
@@ -118,49 +123,34 @@ int main() {
             while (!move_pawn_is_fine) {
                 scanf("%d %d%*c",&x_target,&y_target);
                 move_pawn_is_fine = is_move_legal(board_array, pawn_flag, x_coordinates + 2, 2 * y_coordinates + 2,x_target + 2,2 * y_target + 2);
+                if(!move_pawn_is_fine){
+                    printf("Player O - Bad pawn's destination please enter pawn's destination again:\n");
+                }
             }
-
+            change_place(board_array,pawn_flag,x_coordinates+2,2*y_coordinates+2,x_target+2,2 * y_target + 2,y_target,x_target,y_coordinates,x_coordinates);
             pawn_flag = 'X';
             pawn_moveable = 0;
             move_pawn_is_fine = 0;
         }
         play_number_index++;
         print_score(board_array);
+        if(check_winner(board_array)){
+            play_number_index = 0;
+            printf("Would you like to play another game?(y\\n)\n");
+            scanf("%c%*c", &end_game);
+            check_if_answer_is_good(&end_game);
+            if(end_game=='y'||end_game=='Y')
+                place_pawns(board_array);
+            else{
+                break;
+            }
+        }
     }
-
+    return 0;
 }
 // end of main function //
 
 // functions implements //
-
-int move(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarget, int ytarget,int y_target,int x_target,int y_coordinates,int x_coordinates){
-    if pawn == 'X'{
-        if y_coordinates % 2 ==  y_target % 2 /*eat mode*/ {
-            board_array[row][col]= ' ';
-            board_array[xtarget][ytarget] =  'X';
-            board_array[abs(row-xtarget)][abs(col-ytarget)] = ' ';
-
-        }
-        else /*regular move mod*/{
-            board_array[row][col]= ' ';
-            board_array[xtarget][ytarget] =  'X';
-        }
-    }
-
-    else  /*pawn == 'O'*/ {
-
-        if y_coordinates % 2 ==  y_target % 2 /*eat mode*/ {
-            board_array[row][col]= ' ';
-            board_array[xtarget][ytarget] =  'O';
-            board_array[abs(row-xtarget)][abs(col-ytarget)] = ' ';
-        }
-        else /*regular move mod*/{
-            board_array[row][col]= ' ';
-            board_array[xtarget][ytarget] =  'O';
-        }
-
-    }
-}
 
 int is_move_legal(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarget, int ytarget){
     int sim_move = is_move_simple(board,pawn,row,col);
@@ -192,7 +182,7 @@ int is_move_legal(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarg
             return 1;
         } else if ((eat_move == EAT_RIGHT) && (xtarget == row - 2) && ((ytarget) == col + 4)) {
             return 1;
-        } else if ((sim_move == MOVE_BOTH) && (xtarget == row + 1) && ((ytarget == col + 2) || (ytarget == col - 2))) {
+        } else if ((sim_move == MOVE_BOTH) && (xtarget == row - 1) && ((ytarget == col + 2) || (ytarget == col - 2))) {
             return 1;
         } else if ((sim_move == MOVE_LEFT) && (xtarget == row - 1) && ((ytarget) == col - 2)) {
             return 1;
@@ -278,12 +268,27 @@ int check_winner(char board[][BOARD_SIZE]){
     }
     if(x_score==12){
         printf("Wooohooo! player X Won!");
+        print_board(board_array);
         return 1;
     }
     if(y_score==12){
         printf("Wooohooo! player O Won!");
+        print_board(board_array);
         return 1;
     }
+    for (j = 0; j < BOARD_SIZE; j++) {
+        if (board[2][j]=='O'){
+            printf("Wooohooo! player O Won!");
+            print_board(board_array);
+            return 1;
+        }
+        if (board[9][j]=='X'){
+            printf("Wooohooo! player X Won!");
+            print_board(board_array);
+            return 1;
+        }
+    }
+
     return 0;
 }
 
@@ -400,3 +405,33 @@ int is_move_simple(char board[][BOARD_SIZE], char pawn, int row, int col) {
         }
     }
 }
+void change_place(char board[][BOARD_SIZE],char pawn, int row,int col, int xtarget, int ytarget,int y_target_org,int x_target_org,int y_coord,int x_coord){
+    if (pawn == 'X'){
+        if (y_coord % 2 ==  y_target_org % 2)/*eat mode*/ {
+            board[row][col]= '.';
+            board[xtarget][ytarget] =  'X';
+            board[row+1][(col+ytarget)/2] = '.';
+            printf("Ho nice move! you got him...\n");
+
+        }
+        else /*regular move mod*/{
+            board[row][col]= '.';
+            board[xtarget][ytarget] =  'X';
+        }
+    }
+
+    else  /*pawn == 'O'*/ {
+
+        if (y_coord % 2 ==  y_target_org % 2) /*eat mode*/ {
+            board[row][col]= '.';
+            board[xtarget][ytarget] =  'O';
+            board[row-1][(col+ytarget)/2] = '.';
+            printf("Ho nice move! you got him...\n");
+        }
+        else /*regular move mod*/{
+            board[row][col]= '.';
+            board[xtarget][ytarget] =  'O';
+        }
+    }
+}
+
