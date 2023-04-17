@@ -42,7 +42,7 @@ int pawns_amount(char [][BOARD_SIZE], char pawn);
 // variables declarations //
 
 
-char boards_array[BOARD_SIZE_HEIGHT][BOARD_SIZE]={" |0 1 2 3 4 5 6 7"," *_______________","0|  X   X   X   X","1|X   X   X   X  ","2|  X   X   X   X","3|.   .   .   .   ","4|  .   .   .   .","5|O   O   O   O  ","6|  O   O   O   O","7|O   O   O   O  "};
+char boards_array[BOARD_SIZE_HEIGHT][BOARD_SIZE]={" |0 1 2 3 4 5 6 7"," *---------------","0|  X   X   X   X","1|X   X   X   X  ","2|  X   X   X   X","3|.   .   .   .   ","4|  .   .   .   .","5|O   O   O   O  ","6|  O   O   O   O","7|O   O   O   O  "};
 char end_game;
 
 // main function //
